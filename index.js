@@ -12,16 +12,12 @@ const User = mongoose.model("User", {
   lastName: String,
   class: Number,
 });
-const Child = mongoose.model("child", {
-  firstName: String,
-  lastName: String,
-  class: Number,
-});
 
 app.get("/", (req, res) => {
   res.send("New Express Server");
 });
 
+//Read (GET)
 app.get("/users", async (req, res) => {
   try {
     const users = await User.find();
@@ -35,7 +31,47 @@ app.get("/users", async (req, res) => {
       message: "Something Went Wrong!",
     });
   }
-  res.send("New Express Server");
+});
+
+//Create (POST)
+app.post("/users", async (req, res) => {
+  const { firstName, lastName, classNumber } = req.body;
+  try {
+    await User.create({
+      firstName,
+      lastName,
+      class: classNumber,
+    });
+    res.json({
+      status: "SUCCESS",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "FAILED",
+      message: "Something Went Wrong!",
+    });
+  }
+});
+
+//update (PATCH)
+app.patch("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  const { firstName, lastName, classNumber } = req.body;
+  try {
+    await User.findByIdAndUpdate(id, {
+      firstName,
+      lastName,
+      class: classNumber,
+    });
+    res.json({
+      status: "SUCCESS",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "FAILED",
+      message: "Something Went Wrong!",
+    });
+  }
 });
 
 app.listen(process.env.PORT, () => {
