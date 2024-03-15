@@ -74,6 +74,50 @@ app.patch("/users/:id", async (req, res) => {
   }
 });
 
+//DELETE (DELETE)
+app.delete("/users/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    await User.findByIdAndDelete(id);
+    res.json({
+      status: "SUCCESS",
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "FAILED",
+      message: "Something Went Wrong!",
+    });
+  }
+});
+
+//Search Users
+app.get("/users", async (req, res) => {
+  try {
+    console.log(req.query);
+    const { firstName, lastName, classNumber } = req.query;
+    const query = {};
+    if (firstName) {
+      query.firstName = firstName;
+    }
+    if (lastName) {
+      query.lastName = lastName;
+    }
+    if (classNumber) {
+      query.class = classNumber;
+    }
+    const users = await User.find(query);
+    res.json({
+      status: "SUCCESS",
+      data: users,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "FAILED",
+      message: "Something Went Wrong!",
+    });
+  }
+});
+
 app.listen(process.env.PORT, () => {
   mongoose
     .connect(process.env.MONGODB_URL)
